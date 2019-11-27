@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: Framework/Toolbar.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: Framework/Toolbar.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Declaration of a hard object for a toolbar
+ * Any rectangle node or edge prototype can be placed in the toolbar
+ * @constructor
+ * @param {Object} graph the graph to create a toolbar for
+ * @return properties of a toolbar
+ */
+function createToolbar(graph) {
+
+  let nodes = graph.getNodePrototypes()
+  let edges = graph.getEdgePrototypes()
+  let toolbarElements = []
+  let currentOffsetForNextToolbarElement = 0
+  const toolbarElementSize = {
+    width: 100,
+    height: 50,
+  }
+  let toolbarBounds = {
+    x: 0,
+    y: 0,
+    width: currentOffsetForNextToolbarElement + toolbarElementSize.width,
+    height: toolbarElementSize.height
+  }
+  let newToolElement = undefined
+
+  // Create grabber
+  newToolElement = createToolbarElement('GRABBER', toolbarElementSize, currentOffsetForNextToolbarElement)
+  newToolElement.setIsSelected(true) // By default mark this tool as selected on startup
+  newToolElement.draw()
+
+  // Add it to the list of toolbar elements
+  toolbarElements.push(newToolElement)
+
+  // Increase the size of the toolbar
+  toolbarBounds.width += toolbarElementSize.width
+  currentOffsetForNextToolbarElement += toolbarElementSize.width
+
+  // Mark it as 'selected'
+  let selectedNode = newToolElement
+
+  // Add all node prototypes given by the graph
+  for (let i = 0; i &lt; nodes.length; i++) {
+    newToolElement = createToolbarElement(nodes[i], toolbarElementSize, currentOffsetForNextToolbarElement)
+
+    newToolElement.draw()
+    toolbarElements.push(newToolElement)
+    toolbarBounds.width += toolbarElementSize.width
+    currentOffsetForNextToolbarElement += toolbarElementSize.width
+  }
+
+  // Add all edge prototypes given by the graph
+  for (let i = 0; i &lt; edges.length; i++) {
+    newToolElement = createToolbarElement(edges[i], toolbarElementSize, currentOffsetForNextToolbarElement)
+
+    newToolElement.draw()
+    toolbarElements.push(newToolElement)
+    toolbarBounds.width += toolbarElementSize.width
+    currentOffsetForNextToolbarElement += toolbarElementSize.width
+  }
+
+  return {
+    /**
+      * Returns the rectangular bounds of this node
+      * @return the bounds
+      * @memberof createToolbar
+      */
+    getBounds: () => {
+      return toolbarBounds
+    },
+    /**
+     * Returns the currently selected element in the toolbar
+     * @return {Object} the selected toolbar element
+     * @memberof createToolbar
+     */
+    getSelected: () => {
+      return selectedNode
+    },
+    /**
+     * Redraws the toolbar
+     * @memberof createToolbar
+     */
+    redraw: () => {
+      for (let i = 0; i &lt; toolbarElements.length; i++) {
+        toolbarElements[i].draw()
+      }
+    },
+    /**
+     * Checks if the toolbar was clicked
+     * @param {Object} p is the point to check
+     * @return {boolean} whether the toolbar was clicked
+     * @memberof createToolbar
+     */
+    areaIsClicked: (p) => {
+      const x = toolbarBounds.x
+      const y = toolbarBounds.y
+      const width = toolbarBounds.width
+      const height = toolbarBounds.height
+
+      return x &lt;= p.x &amp;&amp; p.x &lt;= x + width &amp;&amp; y &lt;= p.y &amp;&amp; p.y &lt;= y + height
+    },
+    /**
+     * Given a point, marks a new toolbar element as selected
+     * @memberof createToolbar
+     * @param {Object} point is the point to check
+     */
+    selectNode: (point) => {
+      for (let i = 0; i &lt; toolbarElements.length; i++) {
+        let element = toolbarElements[i]
+        if (element.contains(point)) {
+          element.setIsSelected(true)
+          selectedNode = element
+        }
+        else {
+          element.setIsSelected(false)
+        }
+      }
+    }
+  }
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="createClassDiagramGraph.html">createClassDiagramGraph</a></li><li><a href="createClassNode.html">createClassNode</a></li><li><a href="createDiamondEdge.html">createDiamondEdge</a></li><li><a href="createDottedEdge.html">createDottedEdge</a></li><li><a href="createEdge.html">createEdge</a></li><li><a href="createGraph.html">createGraph</a></li><li><a href="createInterfaceNode.html">createInterfaceNode</a></li><li><a href="createNoteNode.html">createNoteNode</a></li><li><a href="createOpenTriangleEdge.html">createOpenTriangleEdge</a></li><li><a href="createPackageNode.html">createPackageNode</a></li><li><a href="createPropertySheet.html">createPropertySheet</a></li><li><a href="createRectangularNode.html">createRectangularNode</a></li><li><a href="createSolidEdge.html">createSolidEdge</a></li><li><a href="createToolbar.html">createToolbar</a></li><li><a href="createToolbarElement.html">createToolbarElement</a></li></ul><h3>Global</h3><ul><li><a href="global.html#drawGrabber">drawGrabber</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.1</a> on Mon May 06 2019 12:04:54 GMT-0700 (Pacific Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
